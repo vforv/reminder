@@ -21,7 +21,8 @@
 
 char createDatabaseIfNotExists();
 void readFileAndCreateTable();
-
+time_t to_seconds(const char *date);
+void returnCleanRow(char * cont);
 /*
  * 
  */
@@ -44,6 +45,7 @@ int main(int argc, char** argv) {
     return (EXIT_SUCCESS);
 }
 
+//READING
 //DATABASE FUNCTION 
 char createDatabaseIfNotExists(char * filename){
     FILE * database;
@@ -76,19 +78,43 @@ void readFileAndCreateTable(){
             fclose(database);
             
             int k;
+            
+            char *date1;
+            char *date2;
+           while(1){
+               int change = 0;
             for(k = 0;k < i;k++){
-            printf("%s \n", lines[k]); 
-            }            
-}
+                char *string = strdup(lines[k]);
+                char *string1 = strdup(lines[k + 1]);
+                date1 = strsep(&string, "|");
+                date2 = strsep(&string1, "|");
+                    time_t d1=to_seconds(date1);
+                    time_t d2=to_seconds(date2);
+                    if(d1 > d2){
+                        char tmp[BUFSIZ];
+                        strcpy(tmp, lines[k]);
+                        strcpy(lines[k], lines[k + 1]);
+                        strcpy(lines[k + 1], tmp);
+                        change = 1;
+                    }
+//             returnCleanRow(lines[k]); 
+            }   
+                
+            if(change == 0){
+                
+                break;
+            }
+            }
+            for(k = 0;k < i;k++){
+            returnCleanRow(lines[k]);
+            }
+            
+}   
 void returnCleanRow(char * cont){
         char* token;
         int br = 1;
-        int i;
         char* tofree;
         char *string = strdup(cont);
-        int broj = numberOfLines();
-        char * list[8];
-
        
         if (string != NULL) {
 
@@ -96,44 +122,22 @@ void returnCleanRow(char * cont){
 
           while ((token = strsep(&string, "|")) != NULL)
           {
-              list[br] = token;
+              if(br == 1){
+              printf("Datum: %s\n\n",token,br);
+              }else if(br ==2){
+                printf("Obaveza: %s\n\n",token,br);  
+              }else if(br == 3){
+                 printf("Ostalo jos dana: %s\n\n",token,br); 
+              }
               br++;
           }
-          
-          
-          
-          free(tofree);
+          printf("---------------------------- \n\n");
+           free(tofree);
         }
-        for(i = 1;i < 8 ;i++){
-              printf("%s \n", list[i]);
-          }
+        
 }
 
 
-
-void generateArray(){
-    
-} 
-
-void generateByDate(){
-    
-}
-
-void generateTable(){
-    
-}
-int numberOfLines(){
-//         int broj;
-//        FILE * database;
-//        database = fopen("database", "r" );
-//        char singleLine[150];
-//        while(!feof(database)){
-//            fgets(singleLine, 150, database);
-//            broj++;
-//        }
-//        return broj;
-//        fclose(database);
-}
 time_t to_seconds(const char *date)
 {
         struct tm storage={0,0,0,0,0,0,0,0,0};
@@ -151,12 +155,6 @@ time_t to_seconds(const char *date)
         }
         return retval;
 }
-// char *date1="20-JUN-2006";
-//   char *date2="21-JUN-2006";
-//   time_t d1=to_seconds(date1);
-//   time_t d2=to_seconds(date2);
-//   
-//   printf("date comparison: %s %s ",date1,date2);
-//   if(d1==d2) printf("equal\n");
-//   if(d2>d1)  printf("second date is later\n");
-//   if(d2<d1)  printf("seocnd date is earlier\n");
+
+
+//WRITING
