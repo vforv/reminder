@@ -15,8 +15,14 @@
 #define TRUE  1
 #define FALSE 0
 
+#define KNRM  "\x1B[0m"
 #define KRED  "\x1B[31m"
 #define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
 #define RESET "\033[0m"
 
 char createDatabaseIfNotExists();
@@ -29,16 +35,31 @@ void returnCleanRow(char * cont);
 
 //MAIN CODE
 int main(int argc, char** argv) {
-
+    int choose = 2;
       
     if(createDatabaseIfNotExists("database")){
         printf(KGRN "[+] " RESET "DATABSE FILE EXISTS\n");
         puts(KGRN "[+] " RESET "INITIALIZATION STARTED...\n");
         readFileAndCreateTable();
+        puts("To insert new date into database " KRED "1" RESET);
+        scanf(" %d",&choose);
+        if(choose == 1){
+           insertNewRow();
+        }else{
+            puts("You pressed wrong button.");
+        }
+        
         
     }else{
         printf(KRED "[-] " RESET "DATABASE FILE NOT EXISTS");
         readFileAndCreateTable();
+         puts("To insert new date into database " KRED "1" RESET);
+         scanf(" %d",&choose);
+         if(choose == 1){
+           insertNewRow();
+        }else{
+            puts("You pressed wrong button.");
+        }
     }
     
     
@@ -83,7 +104,7 @@ void readFileAndCreateTable(){
             char *date2;
            while(1){
                int change = 0;
-            for(k = 0;k < i;k++){
+            for(k = 0;k < i - 1;k++){
                 char *string = strdup(lines[k]);
                 char *string1 = strdup(lines[k + 1]);
                 date1 = strsep(&string, "|");
@@ -97,7 +118,6 @@ void readFileAndCreateTable(){
                         strcpy(lines[k + 1], tmp);
                         change = 1;
                     }
-//             returnCleanRow(lines[k]); 
             }   
                 
             if(change == 0){
@@ -123,11 +143,11 @@ void returnCleanRow(char * cont){
           while ((token = strsep(&string, "|")) != NULL)
           {
               if(br == 1){
-              printf("Datum: %s\n\n",token,br);
+              printf(KBLU "Datum: " RESET "%s \n",token,br);
               }else if(br ==2){
-                printf("Obaveza: %s\n\n",token,br);  
+                printf(KGRN "Obaveza: " RESET "%s\n",token,br);  
               }else if(br == 3){
-                 printf("Ostalo jos dana: %s\n\n",token,br); 
+                 printf(KMAG "U koliko sati je obaveza: " RESET "%s\n",token,br); 
               }
               br++;
           }
@@ -158,3 +178,43 @@ time_t to_seconds(const char *date)
 
 
 //WRITING
+
+int insertNewRow(){
+    int cont = 1;
+    
+    
+    while(cont == 1){
+    struct timeval tv;
+    char str[12];
+    struct tm *tm;
+    
+    int days = 1;
+    char obligation[20];
+    char dodatno[20];
+    
+    puts("Enter nuber of days till obligation:\n");
+    scanf(" %d", &days);
+    puts("Enter obligation:\n");
+    scanf(" %s", obligation);
+    puts("Sati:\n");
+    scanf(" %s", dodatno);
+    
+    if (gettimeofday(&tv, NULL) == -1)
+        return -1; /* error occurred */
+    tv.tv_sec += days * 24 * 3600; /* add 6 days converted to seconds */
+    tm = localtime(&tv.tv_sec);
+    /* Format as you want */
+    
+    strftime(str, sizeof(str), "%d-%b-%Y", tm);
+    
+    FILE * database;
+    database = fopen("database", "a+");
+    fprintf(database, "%s|%s|%s \n",str,obligation,dodatno);
+    fclose(database);
+    
+    puts("To finish with adding enter 0 to continue press 1 \n");
+    scanf(" %d", &cont);
+    }
+   readFileAndCreateTable();
+}
+
