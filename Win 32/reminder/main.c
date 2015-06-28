@@ -271,16 +271,14 @@ int insertNewRow(){
     struct tm *tm;
 
     int days = 1;
-    char * obligation[1500];
-    char * dodatno[1500];
-    char * pObl = &obligation;
+    char obligation[1500];
+    char dodatno[1500];
 
-    puts("Enter nuber of days till obligation:\n");
+    puts("Enter nuber of days till obligation:");
     scanf(" %d", &days);
-    puts("Enter obligation:\n");
-    scanf(" %s", obligation);
-    puts("Sati:\n");
-    scanf(" %s", dodatno);
+
+    readString(obligation, "Enter obligation \n", 1500);
+    readString(dodatno, "Enter hours \n", 1500);
 
     if (gettimeofday(&tv, NULL) == -1)
         return -1; /* error occurred */
@@ -299,5 +297,17 @@ int insertNewRow(){
     scanf(" %d", &cont);
     }
    readFileAndCreateTable();
+}
+
+
+void readString(char *array, char * prompt, int size) {
+    printf("%s", prompt);
+    int c; int count=0;
+    while((c = getchar()) != '\n' && c != EOF);
+    while ((c = getchar()) != '\n') {
+        array[count] = c; count++;
+        if (count == (size - 1)) { break; }
+    }
+    array[count] = '\0';
 }
 
