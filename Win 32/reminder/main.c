@@ -98,6 +98,7 @@ void readFileAndCreateTable(){
 
             char *date1;
             char *date2;
+            int which;
            while(1){
                int change = 0;
             for(k = 0;k < i - 1;k++){
@@ -105,9 +106,11 @@ void readFileAndCreateTable(){
                 char *string1 = strdup(lines[k + 1]);
                 date1 = strtok(string, "|");
                 date2 = strtok(string1, "|");
-                    time_t d1=to_seconds(date1);
-                    time_t d2=to_seconds(date2);
-                    if(d1 > d2){
+
+
+                    which = getValue(date1,date2);
+
+                    if(which == 1){
                         char tmp[BUFSIZ];
                         strcpy(tmp, lines[k]);
                         strcpy(lines[k], lines[k + 1]);
@@ -157,24 +160,103 @@ void returnCleanRow(char * cont){
 
 }
 
+struct datum{
+    int * day;
+    int * month;
+    int * year;
+};
 
-time_t to_seconds(const char *date)
-{
-        struct tm storage={0,0,0,0,0,0,0,0,0};
-        char *p=NULL;
-        time_t retval=0;
 
-        p=(char *)sscanf(date,"%d-%b-%Y",&storage);
-        if(p==NULL)
-        {
-                retval=0;
+int getValue(char * date1,char * date2){
+    struct datum prvi;
+    struct datum drugi;
+
+
+    char * token;
+    int br =1;
+    char* tofree;
+    char *string = strdup(date1);
+    tofree = string;
+    token = strtok(string, "-");
+          while (token != NULL)
+          {
+              if(br == 1){
+               prvi.day = token;
+              }else if(br == 2){
+              prvi.month = token;
+              }else if(br == 3){
+                prvi.year = token;
+              }
+              token = strtok(NULL,"-");
+              br++;
+          }
+
+
+    char * token1;
+    int br1 =1;
+    char* tofree1;
+    char *string1 = strdup(date2);
+    tofree1 = string1;
+    token1 = strtok(string1, "-");
+
+          while (token1 != NULL)
+          {
+              if(br1 == 1){
+               drugi.day = token1;
+              }else if(br1 == 2){
+                drugi.month = token1;
+              }else if(br1 == 3){
+                drugi.year = token1;
+              }
+              token1 = strtok(NULL,"-");
+              br1++;
+          }
+          int monthToIntPrvi = getMonthNum(prvi.month);
+          int monthToIntDrugi = getMonthNum(drugi.month);
+
+        if(strcmp(prvi.year, drugi.year)>0){
+
+                return 1;
+        }else if(strcmp(prvi.year, drugi.year)<0){
+
+            return 0;
+        }else if(strcmp(prvi.year, drugi.year)==0){
+
+            if(monthToIntPrvi > monthToIntDrugi){
+                return 1;
+            }else if(monthToIntPrvi < monthToIntDrugi){
+                return 0;
+            }else if(monthToIntPrvi == monthToIntDrugi){
+                if(strcmp(prvi.day, drugi.day) >0){
+                    return 1;
+
+                }else if(strcmp(prvi.day, drugi.day) < 0){
+                    return 0;
+                }else if(strcmp(prvi.day, drugi.day) == 0){
+                    return 0;
+                }
+            }
         }
-        else
-        {
-                retval=mktime(&storage);
-        }
-        return retval;
+
+
+        free(tofree1);
+        free(tofree);
+
+
 }
+
+
+int getMonthNum(char * name){
+char *months[12] ={"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+char *pointertoarray = &months;
+int i;
+    for(i = 1; i <= 12; i++){
+        if(strcmp(months[i], name)==0){
+            return i;
+        }
+    }
+}
+
 
 
 //WRITING
@@ -189,8 +271,9 @@ int insertNewRow(){
     struct tm *tm;
 
     int days = 1;
-    char obligation[20];
-    char dodatno[20];
+    char * obligation[1500];
+    char * dodatno[1500];
+    char * pObl = &obligation;
 
     puts("Enter nuber of days till obligation:\n");
     scanf(" %d", &days);
