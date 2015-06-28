@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <regex.h>
-#include <pcre.h>
+
 #include <string.h>
 #include <time.h>
 
@@ -164,7 +164,7 @@ time_t to_seconds(const char *date)
         char *p=NULL;
         time_t retval=0;
 
-        p=(char *)strptime(date,"%d-%b-%Y",&storage);
+        p=strptime(date,"%d-%b-%Y",&storage);
         if(p==NULL)
         {
                 retval=0;
