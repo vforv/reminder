@@ -275,7 +275,7 @@ int insertNewRow(){
     char dodatno[1500];
 
     puts("Enter nuber of days till obligation:");
-    scanf(" %d", &days);
+    scanf(" %d%*c", &days);
 
     readString(obligation, "Enter obligation \n", 1500);
     readString(dodatno, "Enter hours \n", 1500);
@@ -303,11 +303,11 @@ int insertNewRow(){
 void readString(char *array, char * prompt, int size) {
     printf("%s", prompt);
     int c; int count=0;
-    while((c = getchar()) != '\n' && c != EOF);
-    while ((c = getchar()) != '\n') {
+    while ((c = getchar()) != '\n' && c != EOF) {
         array[count] = c; count++;
         if (count == (size - 1)) { break; }
     }
+
     array[count] = '\0';
 }
 
