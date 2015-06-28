@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1435437202 source:c:\documents and settings\dovla\desktop\reminder\reminder\main.c
+	<stdio.h>
+	<stdlib.h>
+	<sys/time.h>
+	<windows.h>
+	<string.h>
+	<time.h>
+	<string.h>
+	<stddef.h>
+	<conio.h>
+
