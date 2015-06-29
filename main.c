@@ -51,14 +51,15 @@ int main(int argc, char** argv) {
         
         
     }else{
-        printf(KRED "[-] " RESET "DATABASE FILE NOT EXISTS");
+        
         readFileAndCreateTable();
-         puts("To insert new date into database " KRED "1" RESET);
+        printf(KRED "[-] " RESET "DATABASE FILE NOT EXISTS \n");
+         puts("To insert new date into database \n" KRED "1" RESET);
          scanf(" %d",&choose);
          if(choose == 1){
            insertNewRow();
         }else{
-            puts("You pressed wrong button.");
+            puts("You pressed wrong button. \n");
         }
     }
     
